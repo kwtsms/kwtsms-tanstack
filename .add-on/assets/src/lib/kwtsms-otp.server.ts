@@ -103,7 +103,8 @@ export async function sendOtp(phoneInput: string, opts: { ip?: string } = {}): P
     const wait = Math.ceil((RESEND_COOLDOWN_MS - (now - last)) / 1000)
     return { ok: false, code: 'COOLDOWN', message: `Wait ${wait} seconds before asking for a new code.`, retryAfterSec: wait }
   }
-  const maxPerHour = Number(process.env.KWTSMS_OTP_MAX_PER_HOUR || 100)
+  const setMax = Number(process.env.KWTSMS_OTP_MAX_PER_HOUR)
+  const maxPerHour = Number.isFinite(setMax) && setMax > 0 ? setMax : 100 // a typo must not turn the cap off
   if (allHits.length >= maxPerHour) return tooMany('Too many codes requested. Try again later.', allHits[0], HOUR_MS, now)
   const perNumber = recent(numberHits.get(phone), now, DAY_MS)
   if (perNumber.length >= NUMBER_MAX_PER_DAY) {

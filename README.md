@@ -44,7 +44,7 @@ npx @tanstack/cli create my-app --add-ons better-auth,tanstack-query,https://raw
 | `KWTSMS_OTP_ALLOWED_PREFIXES` | `965` | Country codes that may receive codes (comma list) |
 | `KWTSMS_OTP_TEMPLATE` | see below | Code text, `{code}` is replaced |
 | `KWTSMS_DEMO` | | Set `1` to keep the demo page on in production (one-time codes only; Send SMS stays off) |
-| `KWTSMS_OTP_MAX_PER_HOUR` | `100` | One-time codes per hour in total, all visitors together |
+| `KWTSMS_OTP_MAX_PER_HOUR` | `100` | One-time codes per hour in total, all visitors together. When it is reached, nobody gets a code until the hour passes: set it above your busiest hour. |
 | `KWTSMS_TRUST_PROXY` | `0` | `1` reads the client IP from `X-Forwarded-For`. Set it only behind your own proxy or host (Vercel, Netlify, Cloudflare); otherwise a client can fake its IP. |
 
 ## What you get
