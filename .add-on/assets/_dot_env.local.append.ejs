@@ -14,3 +14,5 @@ KWTSMS_OTP_SECRET=<%= globalThis.crypto.randomUUID().replace(/-/g, '') + globalT
 KWTSMS_OTP_ALLOWED_PREFIXES=965
 # 1 = read the client IP from X-Forwarded-For (only when your app runs behind your own proxy or host)
 KWTSMS_TRUST_PROXY=0
+# One-time codes per hour in total, all visitors together
+KWTSMS_OTP_MAX_PER_HOUR=100

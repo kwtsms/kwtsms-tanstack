@@ -43,7 +43,8 @@ npx @tanstack/cli create my-app --add-ons better-auth,tanstack-query,https://raw
 | `KWTSMS_OTP_SECRET` | generated | Signs one-time codes (32 or more characters) |
 | `KWTSMS_OTP_ALLOWED_PREFIXES` | `965` | Country codes that may receive codes (comma list) |
 | `KWTSMS_OTP_TEMPLATE` | see below | Code text, `{code}` is replaced |
-| `KWTSMS_DEMO` | | Set `1` to keep the demo page on in production |
+| `KWTSMS_DEMO` | | Set `1` to keep the demo page on in production (one-time codes only; Send SMS stays off) |
+| `KWTSMS_OTP_MAX_PER_HOUR` | `100` | One-time codes per hour in total, all visitors together |
 | `KWTSMS_TRUST_PROXY` | `0` | `1` reads the client IP from `X-Forwarded-For`. Set it only behind your own proxy or host (Vercel, Netlify, Cloudflare); otherwise a client can fake its IP. |
 
 ## What you get
@@ -83,7 +84,7 @@ await sendOtp(phone, { ip: getRequestIP({ xForwardedFor: process.env.KWTSMS_TRUS
 const r = verifyOtp(phone, code) // { ok: true } or { ok: false, code: 'WRONG_CODE' | 'EXPIRED' | ... }
 ```
 
-Built in: 6-digit codes, 5 minutes expiry, 5 tries, 60 seconds before a new code, 10 codes per IP address in 10 minutes, and only the countries in `KWTSMS_OTP_ALLOWED_PREFIXES`. Codes are stored as an HMAC, never as plain text.
+Built in: 6-digit codes, 5 minutes expiry, 5 tries, 60 seconds before a new code, 10 codes per number per day, 10 codes per IP address (IPv6: per /64) in 10 minutes, `KWTSMS_OTP_MAX_PER_HOUR` codes per hour in total, and only the countries in `KWTSMS_OTP_ALLOWED_PREFIXES`. Codes are stored as an HMAC, never as plain text.
 
 The default text is `Your verification code is {code}. It expires in 5 minutes.` Keep your own template in plain ASCII: one Unicode character (an emoji, a curly quote) makes the SMS Unicode, 70 characters per message instead of 160.
 
@@ -113,7 +114,7 @@ Arabic text is sent as is. One Arabic SMS holds 70 characters (67 per part in a 
 
 ## Security
 
-- The demo page is off in production unless `KWTSMS_DEMO=1`.
+- **The demo page is off in production unless `KWTSMS_DEMO=1`. Even then, its Send SMS form stays off and the balance is hidden: a public form that sends any text to any number is an open SMS relay.**
 - Your API password stays on the server. `.env.local` is in `.gitignore`.
 - Report a security problem: see [SECURITY.md](SECURITY.md).
 

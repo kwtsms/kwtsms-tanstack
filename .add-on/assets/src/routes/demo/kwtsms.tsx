@@ -21,10 +21,13 @@ function demoAllowed() {
   }
 }
 
+const isProduction = () => process.env.NODE_ENV === 'production'
+
 const getStatus = createServerFn({ method: 'GET' }).handler(async () => {
   demoAllowed()
   const [ok, balance, error] = await kwtsms().verify()
-  return { testMode: isTestMode(), ok, balance, error, senderId: kwtsms().senderId }
+  // Visitors of a production demo do not need your balance.
+  return { testMode: isTestMode(), ok, balance: isProduction() ? null : balance, error, senderId: kwtsms().senderId }
 })
 
 const sendSmsFn = createServerFn({ method: 'POST' })
@@ -34,6 +37,8 @@ const sendSmsFn = createServerFn({ method: 'POST' })
   }))
   .handler(async ({ data }) => {
     demoAllowed()
+    // Free text to any number would make a public demo an open SMS relay: development only.
+    if (isProduction()) throw new Error('Send SMS is off in production. The one-time code demo stays on with KWTSMS_DEMO=1.')
     return sendSms(data.to, data.message)
   })
 
@@ -104,7 +109,9 @@ function KwtsmsDemo() {
           </p>
         )}
         <p className="m-0 text-sm">
-          {status.ok ? `Connected. Balance: ${status.balance} credits. Sender ID: ${status.senderId}` : `Not connected: ${status.error}`}
+          {status.ok
+            ? `Connected.${status.balance == null ? '' : ` Balance: ${status.balance} credits.`} Sender ID: ${status.senderId}`
+            : `Not connected: ${status.error}`}
         </p>
       </section>
 
