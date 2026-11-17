@@ -1,0 +1,46 @@
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+  schedule:
+    - cron: '17 3 * * 1'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  compiled:
+    name: add-on.json matches the sources
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npx -y @tanstack/cli@latest add-on compile
+      - run: git diff --exit-code add-on.json
+  scaffold:
+    name: scaffold, typecheck, build (${{ matrix.addons }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        addons: ['', 'better-auth,tanstack-query']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Serve add-on.json
+        run: (python3 -m http.server 8765 --bind 127.0.0.1 &) && sleep 1
+      - name: Create app
+        working-directory: ${{ runner.temp }}
+        run: npx -y @tanstack/cli@latest create app -y --no-git --add-ons "${{ matrix.addons }}${{ matrix.addons && ',' || '' }}http://127.0.0.1:8765/add-on.json"
+      - name: Typecheck and build
+        working-directory: ${{ runner.temp }}/app
+        run: |
+          npx tsc --noEmit -p .
+          npm run build
+      - name: No server code in the client bundle
+        working-directory: ${{ runner.temp }}/app
+        run: '! grep -rlE "KWTSMS_PASSWORD|createHmac|kwtsms-otp" dist/client'

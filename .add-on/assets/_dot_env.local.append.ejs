@@ -1,0 +1,14 @@
+
+# kwtSMS: API username and password from the API page of your kwtSMS account (not your website login)
+KWTSMS_USERNAME=
+KWTSMS_PASSWORD=
+# The Sender ID people see. KWT-SMS is for testing only; use your own registered Sender ID.
+KWTSMS_SENDER_ID=KWT-SMS
+# 1 = test mode: messages are queued, never delivered. Set 0 to send for real.
+KWTSMS_TEST_MODE=1
+# Country code added to local 8-digit numbers
+KWTSMS_DEFAULT_COUNTRY_CODE=965
+# Signs one-time codes. Generated for this project; keep it secret.
+KWTSMS_OTP_SECRET=<%= globalThis.crypto.randomUUID().replace(/-/g, '') + globalThis.crypto.randomUUID().replace(/-/g, '') %>
+# Country codes that may receive one-time codes (comma list). Stops SMS pumping to other countries.
+KWTSMS_OTP_ALLOWED_PREFIXES=965

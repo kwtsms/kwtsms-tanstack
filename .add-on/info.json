@@ -1,0 +1,31 @@
+{
+  "id": "kwtsms",
+  "name": "kwtSMS",
+  "description": "Send SMS and one-time codes (OTP) in Kuwait and worldwide with kwtSMS",
+  "author": "kwtSMS",
+  "version": "0.1.0",
+  "license": "MIT",
+  "link": "https://github.com/kwtsms/kwtsms-tanstack",
+  "type": "add-on",
+  "phase": "add-on",
+  "category": "api",
+  "color": "#FFA200",
+  "framework": "react",
+  "modes": ["file-router"],
+  "routes": [
+    {
+      "icon": "MessageSquare",
+      "url": "/demo/kwtsms",
+      "name": "kwtSMS",
+      "path": "src/routes/demo/kwtsms.tsx",
+      "jsName": "KwtsmsDemo"
+    }
+  ],
+  "packageAdditions": {
+    "dependencies": { "kwtsms": "^0.6.0" }
+  },
+  "envVars": [
+    { "name": "KWTSMS_USERNAME", "description": "kwtSMS API username (API page of your account, not your website login)", "required": true, "file": ".env.local" },
+    { "name": "KWTSMS_PASSWORD", "description": "kwtSMS API password", "required": true, "secret": true, "file": ".env.local" }
+  ]
+}
