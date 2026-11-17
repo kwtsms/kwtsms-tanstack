@@ -12,3 +12,5 @@ KWTSMS_DEFAULT_COUNTRY_CODE=965
 KWTSMS_OTP_SECRET=<%= globalThis.crypto.randomUUID().replace(/-/g, '') + globalThis.crypto.randomUUID().replace(/-/g, '') %>
 # Country codes that may receive one-time codes (comma list). Stops SMS pumping to other countries.
 KWTSMS_OTP_ALLOWED_PREFIXES=965
+# 1 = read the client IP from X-Forwarded-For (only when your app runs behind your own proxy or host)
+KWTSMS_TRUST_PROXY=0

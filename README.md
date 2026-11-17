@@ -44,6 +44,7 @@ npx @tanstack/cli create my-app --add-ons better-auth,tanstack-query,https://raw
 | `KWTSMS_OTP_ALLOWED_PREFIXES` | `965` | Country codes that may receive codes (comma list) |
 | `KWTSMS_OTP_TEMPLATE` | see below | Code text, `{code}` is replaced |
 | `KWTSMS_DEMO` | | Set `1` to keep the demo page on in production |
+| `KWTSMS_TRUST_PROXY` | `0` | `1` reads the client IP from `X-Forwarded-For`. Set it only behind your own proxy or host (Vercel, Netlify, Cloudflare); otherwise a client can fake its IP. |
 
 ## What you get
 
@@ -78,7 +79,7 @@ export const notifyOrder = createServerFn({ method: 'POST' })
 import { getRequestIP } from '@tanstack/react-start/server'
 import { sendOtp, verifyOtp } from '#/lib/kwtsms-otp.server'
 
-await sendOtp(phone, { ip: getRequestIP({ xForwardedFor: true }) })
+await sendOtp(phone, { ip: getRequestIP({ xForwardedFor: process.env.KWTSMS_TRUST_PROXY === '1' }) })
 const r = verifyOtp(phone, code) // { ok: true } or { ok: false, code: 'WRONG_CODE' | 'EXPIRED' | ... }
 ```
 

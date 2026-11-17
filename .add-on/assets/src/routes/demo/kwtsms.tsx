@@ -7,6 +7,14 @@ import { getRequestIP } from '@tanstack/react-start/server'
 import { isTestMode, kwtsms, sendSms } from '#/lib/kwtsms.server'
 import { sendOtp, verifyOtp } from '#/lib/kwtsms-otp.server'
 
+// Server functions accept any JSON from the network: check type and size before use.
+function text(value: unknown, name: string, max: number): string {
+  if (typeof value !== 'string' || value.trim() === '' || value.length > max) {
+    throw new Error(`${name}: enter 1 to ${max} characters.`)
+  }
+  return value
+}
+
 function demoAllowed() {
   if (process.env.NODE_ENV === 'production' && process.env.KWTSMS_DEMO !== '1') {
     throw new Error('The kwtSMS demo is off in production. Set KWTSMS_DEMO=1 to turn it on.')
@@ -20,21 +28,28 @@ const getStatus = createServerFn({ method: 'GET' }).handler(async () => {
 })
 
 const sendSmsFn = createServerFn({ method: 'POST' })
-  .validator((d: { to: string; message: string }) => d)
+  .validator((d: { to: string; message: string }) => ({
+    to: text(d?.to, 'Phone number', 40),
+    message: text(d?.message, 'Message', 1000),
+  }))
   .handler(async ({ data }) => {
     demoAllowed()
     return sendSms(data.to, data.message)
   })
 
 const sendOtpFn = createServerFn({ method: 'POST' })
-  .validator((d: { phone: string }) => d)
+  .validator((d: { phone: string }) => ({ phone: text(d?.phone, 'Phone number', 40) }))
   .handler(async ({ data }) => {
     demoAllowed()
-    return sendOtp(data.phone, { ip: getRequestIP({ xForwardedFor: true }) })
+    // Trust X-Forwarded-For only behind your own proxy (KWTSMS_TRUST_PROXY=1): a client can set it to dodge the IP limit.
+    return sendOtp(data.phone, { ip: getRequestIP({ xForwardedFor: process.env.KWTSMS_TRUST_PROXY === '1' }) })
   })
 
 const verifyOtpFn = createServerFn({ method: 'POST' })
-  .validator((d: { phone: string; code: string }) => d)
+  .validator((d: { phone: string; code: string }) => ({
+    phone: text(d?.phone, 'Phone number', 40),
+    code: text(d?.code, 'Code', 10),
+  }))
   .handler(async ({ data }) => {
     demoAllowed()
     return verifyOtp(data.phone, data.code)
