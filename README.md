@@ -5,6 +5,8 @@
 
 Send SMS and one-time codes (OTP) from your TanStack Start app, through kwtSMS, the Kuwaiti SMS gateway.
 
+All kwtSMS integrations: [kwtsms.com/integrations](https://www.kwtsms.com/integrations/)
+
 A TanStack CLI add-on. It adds server-only SMS helpers, a one-time code service and a demo page to a new or existing app.
 
 ## Requirements
