@@ -1,3 +1,8 @@
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset=".github/assets/readme-header-dark.png">
+  <img alt="kwtSMS + TanStack: SMS and OTP for TanStack Start" src=".github/assets/readme-header-light.png">
+</picture>
+
 # kwtSMS for TanStack Start
 
 [![CI](https://github.com/kwtsms/kwtsms-tanstack/actions/workflows/ci.yml/badge.svg)](https://github.com/kwtsms/kwtsms-tanstack/actions/workflows/ci.yml)
